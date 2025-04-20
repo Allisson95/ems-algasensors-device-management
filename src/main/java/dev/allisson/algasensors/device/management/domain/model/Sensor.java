@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
@@ -14,11 +15,22 @@ public class Sensor implements Serializable {
     @AttributeOverride(name = "value", column = @Column(name = "id", columnDefinition = "BIGINT"))
     @EmbeddedId
     private SensorId id;
+
+    @Setter
     private String name;
+
+    @Setter
     private String ip;
+
+    @Setter
     private String location;
+
+    @Setter
     private String protocol;
+
+    @Setter
     private String model;
+
     private Boolean enabled;
 
     protected Sensor() {

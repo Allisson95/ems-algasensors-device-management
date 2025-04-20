@@ -11,4 +11,7 @@ public interface SensorMapper {
 
     @Mapping(source = "id.value", target = "id")
     SensorOutput toDto(Sensor sensor);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Sensor partialUpdate(SensorInput sensorInput, @MappingTarget Sensor sensor);
 }

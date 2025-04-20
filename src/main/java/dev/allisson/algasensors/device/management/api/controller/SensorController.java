@@ -55,4 +55,23 @@ public class SensorController {
                 .body(this.sensorMapper.toDto(sensor));
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("{sensorId}")
+    public void delete(@PathVariable TSID sensorId) {
+        log.info("Received a new request to delete a sensor by id: {}", sensorId);
+        final Sensor sensor = this.sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        this.sensorRepository.delete(sensor);
+    }
+
+    @PutMapping("{sensorId}")
+    public ResponseEntity<SensorOutput> update(@PathVariable TSID sensorId, @RequestBody final SensorInput input) {
+        log.info("Received a new request to update a sensor by id: {} with new data: {}", sensorId, input);
+        final Sensor sensor = this.sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        this.sensorMapper.partialUpdate(input, sensor);
+        this.sensorRepository.update(sensor);
+        return ResponseEntity.ok(this.sensorMapper.toDto(sensor));
+    }
+
 }
