@@ -9,6 +9,9 @@ import dev.allisson.algasensors.device.management.domain.repository.SensorReposi
 import io.hypersistence.tsid.TSID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +27,13 @@ public class SensorController {
 
     private final SensorRepository sensorRepository;
     private final SensorMapper sensorMapper;
+
+    @GetMapping
+    public ResponseEntity<Page<SensorOutput>> search(@PageableDefault final Pageable pageable) {
+        log.info("Received a new request to search for sensors");
+        final Page<Sensor> sensors = this.sensorRepository.findAll(pageable);
+        return ResponseEntity.ok(sensors.map(this.sensorMapper::toDto));
+    }
 
     @GetMapping("{sensorId}")
     public ResponseEntity<SensorOutput> getOne(@PathVariable final TSID sensorId) {
