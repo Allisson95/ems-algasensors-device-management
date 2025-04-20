@@ -47,4 +47,17 @@ public class Sensor implements Serializable {
         this.enabled = false;
     }
 
+    public void enable() {
+        if (this.enabled) {
+            throw new IllegalStateException("Sensor is already enabled");
+        }
+        this.enabled = true;
+    }
+
+    public void disable() {
+        if (!this.enabled) {
+            throw new IllegalStateException("Sensor is already disabled");
+        }
+        this.enabled = false;
+    }
 }

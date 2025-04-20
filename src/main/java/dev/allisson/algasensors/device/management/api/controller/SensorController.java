@@ -74,4 +74,24 @@ public class SensorController {
         return ResponseEntity.ok(this.sensorMapper.toDto(sensor));
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("{sensorId}/enable")
+    public void enable(@PathVariable TSID sensorId) {
+        log.info("Received a new request to enable a sensor by id: {}", sensorId);
+        final Sensor sensor = this.sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        sensor.enable();
+        this.sensorRepository.update(sensor);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("{sensorId}/enable")
+    public void disable(@PathVariable TSID sensorId) {
+        log.info("Received a new request to disable a sensor by id: {}", sensorId);
+        final Sensor sensor = this.sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        sensor.disable();
+        this.sensorRepository.update(sensor);
+    }
+
 }
