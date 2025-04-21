@@ -2,7 +2,9 @@ package dev.allisson.algasensors.device.management.api.controller;
 
 import dev.allisson.algasensors.device.management.api.client.SensorMonitoringClient;
 import dev.allisson.algasensors.device.management.api.mapper.SensorMapper;
+import dev.allisson.algasensors.device.management.api.model.SensorDetailOutput;
 import dev.allisson.algasensors.device.management.api.model.SensorInput;
+import dev.allisson.algasensors.device.management.api.model.SensorMonitoringOutput;
 import dev.allisson.algasensors.device.management.api.model.SensorOutput;
 import dev.allisson.algasensors.device.management.domain.model.Sensor;
 import dev.allisson.algasensors.device.management.domain.model.SensorId;
@@ -43,6 +45,16 @@ public class SensorController {
         final Sensor sensor = this.sensorRepository.findById(new SensorId(sensorId))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return ResponseEntity.ok(this.sensorMapper.toDto(sensor));
+    }
+
+    @GetMapping("{sensorId}/detail")
+    public ResponseEntity<SensorDetailOutput> getOneWithDetail(@PathVariable final TSID sensorId) {
+        log.info("Received a new request to get a sensor with detail by id: {}", sensorId);
+        final SensorId id = new SensorId(sensorId);
+        final Sensor sensor = this.sensorRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        final SensorMonitoringOutput monitoring = this.sensorMonitoringClient.getMonitoringDetail(id);
+        return ResponseEntity.ok(new SensorDetailOutput(this.sensorMapper.toDto(sensor), monitoring));
     }
 
     @PostMapping
