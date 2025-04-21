@@ -1,5 +1,6 @@
 package dev.allisson.algasensors.device.management.api.controller;
 
+import dev.allisson.algasensors.device.management.api.client.SensorMonitoringClient;
 import dev.allisson.algasensors.device.management.api.mapper.SensorMapper;
 import dev.allisson.algasensors.device.management.api.model.SensorInput;
 import dev.allisson.algasensors.device.management.api.model.SensorOutput;
@@ -27,6 +28,7 @@ public class SensorController {
 
     private final SensorRepository sensorRepository;
     private final SensorMapper sensorMapper;
+    private final SensorMonitoringClient sensorMonitoringClient;
 
     @GetMapping
     public ResponseEntity<Page<SensorOutput>> search(@PageableDefault final Pageable pageable) {
@@ -59,9 +61,11 @@ public class SensorController {
     @DeleteMapping("{sensorId}")
     public void delete(@PathVariable TSID sensorId) {
         log.info("Received a new request to delete a sensor by id: {}", sensorId);
-        final Sensor sensor = this.sensorRepository.findById(new SensorId(sensorId))
+        final SensorId id = new SensorId(sensorId);
+        final Sensor sensor = this.sensorRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         this.sensorRepository.delete(sensor);
+        this.sensorMonitoringClient.disableMonitoring(id);
     }
 
     @PutMapping("{sensorId}")
@@ -78,20 +82,24 @@ public class SensorController {
     @PutMapping("{sensorId}/enable")
     public void enable(@PathVariable TSID sensorId) {
         log.info("Received a new request to enable a sensor by id: {}", sensorId);
-        final Sensor sensor = this.sensorRepository.findById(new SensorId(sensorId))
+        final SensorId id = new SensorId(sensorId);
+        final Sensor sensor = this.sensorRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         sensor.enable();
         this.sensorRepository.update(sensor);
+        this.sensorMonitoringClient.enableMonitoring(id);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("{sensorId}/enable")
     public void disable(@PathVariable TSID sensorId) {
         log.info("Received a new request to disable a sensor by id: {}", sensorId);
-        final Sensor sensor = this.sensorRepository.findById(new SensorId(sensorId))
+        final SensorId id = new SensorId(sensorId);
+        final Sensor sensor = this.sensorRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         sensor.disable();
         this.sensorRepository.update(sensor);
+        this.sensorMonitoringClient.disableMonitoring(id);
     }
 
 }
