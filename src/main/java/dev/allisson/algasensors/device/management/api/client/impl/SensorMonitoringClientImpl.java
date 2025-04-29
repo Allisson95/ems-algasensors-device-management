@@ -1,12 +1,13 @@
 package dev.allisson.algasensors.device.management.api.client.impl;
 
+import org.springframework.http.HttpStatusCode;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+
 import dev.allisson.algasensors.device.management.api.client.SensorMonitoringBadGatewayException;
 import dev.allisson.algasensors.device.management.api.client.SensorMonitoringClient;
 import dev.allisson.algasensors.device.management.api.model.SensorMonitoringOutput;
 import dev.allisson.algasensors.device.management.domain.model.SensorId;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 
 @Component
 public class SensorMonitoringClientImpl implements SensorMonitoringClient {
@@ -17,7 +18,7 @@ public class SensorMonitoringClientImpl implements SensorMonitoringClient {
                 .baseUrl("http://localhost:8082")
                 .defaultStatusHandler(
                         HttpStatusCode::isError,
-                        (request, response) -> {
+                        (_, _) -> {
                             throw new SensorMonitoringBadGatewayException();
                         })
                 .build();
